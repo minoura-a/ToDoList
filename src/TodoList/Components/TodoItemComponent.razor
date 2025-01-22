@@ -1,0 +1,20 @@
+﻿@using global::TodoList.Models
+@rendermode InteractiveServer
+
+<input type="checkbox" @bind="TodoItem.IsDone" />
+<input @bind="TodoItem.Title" />
+<button @onclick="Remove">削除</button>
+
+@code {
+
+    [Parameter]
+    public TodoItem? TodoItem { get; set; }
+    
+    [Parameter]
+    public EventCallback<TodoItem> OnRemove { get; set; }
+
+    private void Remove()
+    {
+        OnRemove.InvokeAsync(TodoItem);
+    }
+}
