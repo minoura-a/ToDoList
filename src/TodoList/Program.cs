@@ -1,10 +1,20 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using TodoList.Components;
+using TodoList.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+var folder = Environment.SpecialFolder.LocalApplicationData;
+var path = Environment.GetFolderPath(folder);
+var dbPath = System.IO.Path.Join(path, "todolist.db");
+
+builder.Services.AddDbContext<TodoListContext>(options =>
+    options.UseSqlite($"Data Source={dbPath}"));
 
 var app = builder.Build();
 
