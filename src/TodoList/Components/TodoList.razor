@@ -1,5 +1,9 @@
 ﻿@page "/todolist"
+@using Microsoft.EntityFrameworkCore
+@using global::TodoList.Data
 @using global::TodoList.Models
+@using global::TodoList.Sevices;
+@inject DataBaseService DataBaseService;
 @rendermode InteractiveServer
 
 <h3>Todo  (@m_TodoList.Items.Count(todo => !todo.IsDone))</h3>
@@ -8,7 +12,7 @@
     @foreach (var todo in m_TodoList.Items)
     {
         <li>
-            <TodoItemComponent TodoItem="todo" OnRemove="RemoveItem" />
+            <TodoItemComponent TodoItem="todo" OnRemove="RemoveItem" OnEdit="EditItem" />
         </li>
     }
 </ul>
@@ -20,27 +24,32 @@
     private TodoItemCollection m_TodoList;
     string newTodo = "";
 
-    void AddTodo()
+    private async void AddTodo()
     {
         if (!string.IsNullOrWhiteSpace(newTodo))
         {
-            m_TodoList.Add(newTodo);
-            newTodo = string.Empty;
+            var todoItem = m_TodoList.Add(newTodo);
+            await DataBaseService.CreateTodoItemAsync(todoItem);
         }
     }
 
-    private void RemoveItem(TodoItem item)
+    private async void RemoveItem(TodoItem item)
     {
+        await DataBaseService.DeleteTodoItemAsync(item.Id);
         m_TodoList.Remove(item);
     }
 
-    protected override void OnInitialized()
+    private async void EditItem(TodoItem item)
     {
-        m_TodoList = new TodoItemCollection();
-        m_TodoList.Add("hogehoge");
-        m_TodoList.Add("hugahuga");
+        await DataBaseService.UpdateTodoItemAsync(item);
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        m_TodoList = new TodoItemCollection();
+        var todoItems = await DataBaseService.GetTodoItemsAsync();
+        m_TodoList.Add(todoItems);
+    }
 }
 
 

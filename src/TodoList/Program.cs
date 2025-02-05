@@ -8,13 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
-var folder = Environment.SpecialFolder.LocalApplicationData;
-var path = Environment.GetFolderPath(folder);
-var dbPath = System.IO.Path.Join(path, "todolist.db");
-
-builder.Services.AddDbContextFactory<TodoListContext>(options =>
-    options.UseSqlite($"Data Source={dbPath}"));
+builder.Services.AddDbContextFactory<TodoListContext>();
 
 var app = builder.Build();
 
@@ -33,5 +27,15 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+// Initialize the database
+var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+using (var scope = scopeFactory.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<TodoListContext>();
+    if (db.Database.EnsureCreated())
+    {
+    }
+}
 
 app.Run();

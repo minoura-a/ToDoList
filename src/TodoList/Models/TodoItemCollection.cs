@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace TodoList.Models;
 
@@ -10,13 +12,13 @@ public class TodoItemCollection
     /// <summary>
     /// Todo要素の一覧
     /// </summary>
-    public ObservableCollection<TodoItem> Items { get; set; } = new ObservableCollection<TodoItem>();
+    public IList<TodoItem> Items { get; set; } = new List<TodoItem>();
 
     /// <summary>
     /// 要素の追加
     /// </summary>
     /// <param name="item"></param>
-    public void Add(string title)
+    public TodoItem Add(string title)
     {
         var item = new TodoItem
         {
@@ -27,6 +29,19 @@ public class TodoItemCollection
             Status = TodoStatus.Incomplete
         };
         Items.Add(item);
+        return item;
+    }
+
+    /// <summary>
+    /// 要素の追加
+    /// </summary>
+    /// <param name="item"></param>
+    public void Add(IEnumerable<TodoItem> todoItems)
+    {
+        foreach (var item in todoItems)
+        {
+            Items.Add(item);
+        }
     }
 
     /// <summary>

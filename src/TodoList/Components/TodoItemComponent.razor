@@ -2,19 +2,27 @@
 @rendermode InteractiveServer
 
 <input type="checkbox" @bind="TodoItem.IsDone" />
-<input @bind="TodoItem.Title" />
+<input @bind="TodoItem.Title" @bind:event="oninput" @onchange="Edit" />
 <button @onclick="Remove">削除</button>
 
 @code {
 
     [Parameter]
     public TodoItem? TodoItem { get; set; }
-    
+
     [Parameter]
     public EventCallback<TodoItem> OnRemove { get; set; }
+
+    [Parameter]
+    public EventCallback<TodoItem> OnEdit { get; set; }
 
     private void Remove()
     {
         OnRemove.InvokeAsync(TodoItem);
+    }
+
+    private void Edit()
+    {
+        OnEdit.InvokeAsync(TodoItem);
     }
 }

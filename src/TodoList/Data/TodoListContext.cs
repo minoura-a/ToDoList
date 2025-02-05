@@ -9,9 +9,7 @@ public class TodoListContext : DbContext
 
     public TodoListContext(DbContextOptions<TodoListContext> options) : base(options)
     {
-        var folder = Environment.SpecialFolder.LocalApplicationData;
-        var path = Environment.GetFolderPath(folder);
-        DbPath = System.IO.Path.Join(path, "todolist.db");
+        DbPath = System.IO.Path.Combine(AppContext.BaseDirectory, "todolist.db");
     }
 
     public DbSet<TodoItem> TodoItems { get; set; }
