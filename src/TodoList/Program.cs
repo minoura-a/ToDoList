@@ -13,7 +13,7 @@ var folder = Environment.SpecialFolder.LocalApplicationData;
 var path = Environment.GetFolderPath(folder);
 var dbPath = System.IO.Path.Join(path, "todolist.db");
 
-builder.Services.AddDbContext<TodoListContext>(options =>
+builder.Services.AddDbContextFactory<TodoListContext>(options =>
     options.UseSqlite($"Data Source={dbPath}"));
 
 var app = builder.Build();
