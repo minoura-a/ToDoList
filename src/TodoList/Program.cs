@@ -36,9 +36,7 @@ var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
 using (var scope = scopeFactory.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<TodoListContext>();
-    if (db.Database.EnsureCreated())
-    {
-    }
+    db.Database.EnsureCreated();
 }
 
 app.Run();
