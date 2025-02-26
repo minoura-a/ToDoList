@@ -6,19 +6,48 @@
 @inject DataBaseService DataBaseService;
 @rendermode InteractiveServer
 
-<h3>Todo  (@m_TodoList.Items.Count(todo => !todo.IsDone))</h3>
+<h3>やることリスト</h3>
 
-<ul>
-    @foreach (var todo in m_TodoList.Items)
-    {
-        <li>
-            <TodoItemComponent TodoItem="todo" OnRemove="RemoveItem" OnEdit="EditItem" />
-        </li>
-    }
-</ul>
+<div class="task-board">
+    <div class="task-column">
+        <h3>未着手 (@m_TodoList.Items.Count(todo => todo.Status == TodoStatus.Incomplete))</h3>
+        <ul class="task-list">
+            @foreach (var todo in m_TodoList.Items.Where(todo => todo.Status == TodoStatus.Incomplete))
+            {
+                <li>
+                    <TodoItemComponent TodoItem="todo" OnRemove="RemoveItem" OnEdit="EditItem" />
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="task-column">
+        <h3>作業中 (@m_TodoList.Items.Count(todo => todo.Status == TodoStatus.Doing))</h3>
+        <ul class="task-list">
+            @foreach (var todo in m_TodoList.Items.Where(todo => todo.Status == TodoStatus.Doing))
+            {
+                <li>
+                    <TodoItemComponent TodoItem="todo" OnRemove="RemoveItem" OnEdit="EditItem" />
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="task-column">
+        <h3>完了 (@m_TodoList.Items.Count(todo => todo.Status == TodoStatus.Complete))</h3>
+        <ul class="task-list">
+            @foreach (var todo in m_TodoList.Items.Where(todo => todo.Status == TodoStatus.Complete))
+            {
+                <li>
+                    <TodoItemComponent TodoItem="todo" OnRemove="RemoveItem" OnEdit="EditItem" />
+                </li>
+            }
+        </ul>
+    </div>
+</div>
 
-<input @bind="newTodo" />
-<button @onclick="AddTodo">Add todo</button>
+<div class="add-task">
+    <input @bind="newTodo" />
+    <button class="simple-button" @onclick="AddTodo">追加</button>
+</div>
 
 @code {
     private TodoItemCollection m_TodoList;

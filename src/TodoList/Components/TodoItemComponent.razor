@@ -1,9 +1,15 @@
 ﻿@using global::TodoList.Models
 @rendermode InteractiveServer
 
-<input type="checkbox" @bind="TodoItem.IsDone" />
-<input @bind="TodoItem.Title" @bind:event="oninput" @onchange="Edit" />
-<button @onclick="Remove">削除</button>
+<div class="task-item">
+    <button class="status-button" @onclick="ToggleStatus">
+        @GetStatusEmoji(TodoItem.Status)
+    </button>
+    <input class="todo-title" @bind="TodoItem.Title" @bind:event="oninput" @onchange="Edit" />
+    <button class="remove-button" @onclick="Remove">
+        <image class="img-small" src="removeIcon.svg" alt="削除"></image>
+    </button>
+</div>
 
 @code {
 
@@ -24,5 +30,31 @@
     private void Edit()
     {
         OnEdit.InvokeAsync(TodoItem);
+    }
+
+    private void ToggleStatus()
+    {
+        if (TodoItem != null)
+        {
+            TodoItem.Status = TodoItem.Status switch
+            {
+                TodoStatus.Incomplete => TodoStatus.Doing,
+                TodoStatus.Doing => TodoStatus.Complete,
+                TodoStatus.Complete => TodoStatus.Incomplete,
+                _ => TodoStatus.Incomplete
+                };
+            Edit();
+        }
+    }
+
+    private string GetStatusEmoji(TodoStatus status)
+    {
+        return status switch
+        {
+            TodoStatus.Incomplete => "📝", // 未着手
+            TodoStatus.Doing => "🔄", // 作業中
+            TodoStatus.Complete => "✅", // 完了
+            _ => "📝"
+            };
     }
 }
