@@ -8,17 +8,17 @@ public class TodoItem
     /// <summary>
     /// ID
     /// </summary>
-    public int Id { get; set; }
-
-    /// <summary>
-    /// ID
-    /// </summary>
-    public Guid Guid { get; set; }
+    public string Guid { get; } = System.Guid.NewGuid().ToString();
 
     /// <summary>
     /// タイトル
     /// </summary>
-    public string Title { get; set; }
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>
+    /// ステータス
+    /// </summary>
+    public TodoStatus Status { get; set; }
 
     /// <summary>
     /// 完了したかどうか
@@ -26,7 +26,14 @@ public class TodoItem
     public bool IsDone { get; set; }
 
     /// <summary>
-    /// ステータス
+    /// 所属するグループの一覧
     /// </summary>
-    public TodoStatus Status { get; set; }
+    public TodoItemGroup TodoItemGroup { get; set; } = new TodoItemGroup();
+
+    public TodoItem() { }
+
+    public TodoItem(TodoItemGroup todoItemGroup)
+    {
+        TodoItemGroup = todoItemGroup;
+    }
 }

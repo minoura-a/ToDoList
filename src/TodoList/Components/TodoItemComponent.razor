@@ -2,19 +2,26 @@
 @rendermode InteractiveServer
 
 <div class="task-item">
-    <button class="status-button" @onclick="ToggleStatus">
-        @GetStatusEmoji(TodoItem.Status)
+    <button class="status-button" @onclick="ToggleIsDone">
+        @if (TodoItem.IsDone)
+        {
+            <span>☑️</span>
+        }
+        else
+        {
+            <span>🔖</span>
+        }
     </button>
-    <input class="todo-title" @bind="TodoItem.Title" @bind:event="oninput" @onchange="Edit" />
+    <input class="todo-title" type="text" @bind="TodoItem.Title" @bind:event="oninput" @onchange="Edit"></input>
     <button class="remove-button" @onclick="Remove">
-        <image class="img-small" src="removeIcon.svg" alt="削除"></image>
+        <span>🗑</span>
     </button>
 </div>
 
 @code {
 
     [Parameter]
-    public TodoItem? TodoItem { get; set; }
+    public TodoItem TodoItem { get; set; }
 
     [Parameter]
     public EventCallback<TodoItem> OnRemove { get; set; }
@@ -32,29 +39,12 @@
         OnEdit.InvokeAsync(TodoItem);
     }
 
-    private void ToggleStatus()
+    private void ToggleIsDone(MouseEventArgs e)
     {
         if (TodoItem != null)
         {
-            TodoItem.Status = TodoItem.Status switch
-            {
-                TodoStatus.Incomplete => TodoStatus.Doing,
-                TodoStatus.Doing => TodoStatus.Complete,
-                TodoStatus.Complete => TodoStatus.Incomplete,
-                _ => TodoStatus.Incomplete
-                };
+            TodoItem.IsDone = !TodoItem.IsDone;
             Edit();
         }
-    }
-
-    private string GetStatusEmoji(TodoStatus status)
-    {
-        return status switch
-        {
-            TodoStatus.Incomplete => "📝", // 未着手
-            TodoStatus.Doing => "🔄", // 作業中
-            TodoStatus.Complete => "✅", // 完了
-            _ => "📝"
-            };
     }
 }

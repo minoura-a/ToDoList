@@ -1,0 +1,103 @@
+﻿@using global::TodoList.Models
+@using global::TodoList.Sevices
+@inject DataBaseService DataBaseService
+@code {
+    [Parameter]
+    public string groupGuid { get; set; } = "";
+
+    [Parameter]
+    public TodoItemGroup selectedGroup { get; set; } = new TodoItemGroup();
+
+    [Parameter]
+    public TodoItemGroup completeGroup { get; set; } = new TodoItemGroup();
+
+    private string newTodo = "";
+    private bool showCongratulations = false;
+
+    private async void AddTodo()
+    {
+        if (selectedGroup != null && !string.IsNullOrWhiteSpace(newTodo))
+        {
+            var todoItem = selectedGroup.Add(newTodo);
+            await DataBaseService.CreateTodoItemAsync(selectedGroup, todoItem);
+            newTodo = "";
+        }
+    }
+
+    private async void RemoveItem(TodoItem item)
+    {
+        if (selectedGroup != null)
+        {
+            selectedGroup.Remove(item);
+            await DataBaseService.DeleteTodoItemAsync(item);
+            CheckTodoCount();
+        }
+    }
+
+    private async void EditItem(TodoItem item)
+    {
+        if (item.IsDone && item.TodoItemGroup.Name != "完了")
+        {
+            selectedGroup?.Remove(item);
+            await DataBaseService.DeleteTodoItemAsync(item);
+            completeGroup.Add(item);
+            await DataBaseService.CreateTodoItemAsync(completeGroup, item);
+        }
+
+        if (selectedGroup != null)
+        {
+            await DataBaseService.UpdateTodoItemAsync(selectedGroup.Guid, item);
+        }
+        CheckTodoCount();
+    }
+
+    private void CheckTodoCount()
+    {
+        if (selectedGroup.Items.Count(todo => todo.IsDone == false) == 0)
+        {
+            ShowCongratulations();
+        }
+    }
+
+    private async void ShowCongratulations()
+    {
+        showCongratulations = true;
+        StateHasChanged();
+        await Task.Delay(2000);
+        showCongratulations = false;
+        StateHasChanged();
+    }
+}
+
+@if (selectedGroup != null)
+{
+    <div class="task-board">
+        <h3>@selectedGroup.Name (@selectedGroup.Items.Count())</h3>
+        <ul class="task-list">
+            @foreach (var todo in selectedGroup.Items)
+            {
+                <li>
+                    <TodoItemComponent TodoItem="todo" OnRemove="RemoveItem" OnEdit="EditItem" />
+                </li>
+            }
+        </ul>
+
+        <div class="add-task">
+            <input class="newText" @bind="newTodo" placeholder="新しいタスク" />
+            <button class="simple-button" @onclick="AddTodo">
+                <span>✏️</span>
+            </button>
+        </div>
+    </div>
+}
+else
+{
+    <p>グループが見つかりません。</p>
+}
+
+@if (showCongratulations)
+{
+    <div class="congratulations">
+        <h4 class="congratulations-text">🎊🎉完了おめでとう！🎉🎊</h4>
+    </div>
+}

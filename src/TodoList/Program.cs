@@ -9,8 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-builder.Services.AddDbContextFactory<TodoListContext>(opt =>
-    opt.UseSqlite($"Data Source=todolist.db"));
+builder.Services.AddDbContextFactory<TodoListContext>();
 builder.Services.AddScoped<DataBaseService>();
 
 var app = builder.Build();

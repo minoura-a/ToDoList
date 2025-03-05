@@ -1,0 +1,78 @@
+﻿@using global::TodoList.Models
+@using global::TodoList.Sevices
+@inject DataBaseService DataBaseService
+@code {
+    private string newGroupName = "";
+    private TodoItemGroup selectedGroup;
+    private TodoItemGroup completeGroup;
+    private IList<TodoItemGroup> m_Groups = new List<TodoItemGroup>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        m_Groups = await DataBaseService.GetAllTodoItemGroupsAsync();
+        if (!m_Groups.Any())
+        {
+            var today = await AddGroup("今日");
+            var complete = await AddGroup("完了");
+        }
+        completeGroup = m_Groups.First(g => g.Name == "完了");
+    }
+
+    private async void AddGroup()
+    {
+        if (!string.IsNullOrWhiteSpace(newGroupName))
+        {
+            var group = new TodoItemGroup() { Name = newGroupName };
+            await DataBaseService.CreateTodoItemGroupAsync(group);
+            m_Groups.Add(group);
+            newGroupName = "";
+        }
+    }
+
+    private async Task<TodoItemGroup> AddGroup(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            name = "新しいグループ";
+        }
+        var group = new TodoItemGroup() { Name = name };
+        m_Groups.Add(group);
+        await DataBaseService.CreateTodoItemGroupAsync(group);
+        return group;
+    }
+
+    private void SelectGroup(TodoItemGroup group)
+    {
+        selectedGroup = group;
+    }
+}
+
+<div class="todo-list-container">
+
+    <div class="group-list">
+        @foreach (var group in m_Groups)
+        {
+            <button class="group-button" @onclick="() => SelectGroup(group)">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true">@group.Name</span>
+            </button>
+        }
+
+        <div class="add-group">
+            <input @bind="newGroupName" placeholder="新しいグループ" />
+            <button class="simple-button" @onclick="AddGroup">
+                <span>✏️</span>
+            </button>
+        </div>
+    </div>
+    <div class="group-content">
+        @if (selectedGroup != null)
+        {
+            <TodoContent selectedGroup="selectedGroup" completeGroup="completeGroup"></TodoContent>
+        }
+        else
+        {
+            <p>グループを選択してください。</p>
+        }
+    </div>
+
+</div>

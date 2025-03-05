@@ -7,12 +7,22 @@ namespace TodoList.Models;
 /// <summary>
 /// Todo要素の一覧を表すクラス
 /// </summary>
-public class TodoItemCollection
+public class TodoItemGroup
 {
+    /// <summary>
+    /// タイトル
+    /// </summary>
+    public string Name { get; set; } = "Todo List";
+
+    /// <summary>
+    /// guid
+    /// </summary>
+    public string Guid { get; } = System.Guid.NewGuid().ToString();
+
     /// <summary>
     /// Todo要素の一覧
     /// </summary>
-    public IList<TodoItem> Items { get; set; } = new List<TodoItem>();
+    public List<TodoItem> Items { get; } = new List<TodoItem>();
 
     /// <summary>
     /// 要素の追加
@@ -20,14 +30,21 @@ public class TodoItemCollection
     /// <param name="item"></param>
     public TodoItem Add(string title)
     {
-        var item = new TodoItem
+        var item = new TodoItem(this)
         {
-            Id = Items.Count + 1,
-            Guid = Guid.NewGuid(),
             Title = title,
-            IsDone = false,
             Status = TodoStatus.Incomplete
         };
+        Items.Add(item);
+        return item;
+    }
+
+    /// <summary>
+    /// 要素の追加
+    /// </summary>
+    /// <param name="item"></param>
+    public TodoItem Add(TodoItem item)
+    {
         Items.Add(item);
         return item;
     }
@@ -86,9 +103,9 @@ public class TodoItemCollection
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public TodoItem GetItem(int id)
+    public TodoItem? GetItem(string guid)
     {
-        return Items.FirstOrDefault(i => i.Id == id);
+        return Items.FirstOrDefault(i => i.Guid == guid);
     }
 
     /// <summary>
