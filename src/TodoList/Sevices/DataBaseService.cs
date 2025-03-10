@@ -38,7 +38,7 @@ namespace TodoList.Sevices
         public async Task<IList<TodoItemGroup>> GetAllTodoItemGroupsAsync()
         {
             using var context = m_ContextFactory.CreateDbContext();
-            return await context.TodoItemGroups.ToListAsync();
+            return await context.TodoItemGroups.Include(i => i.Items).ToListAsync();
         }
 
         /// <summary>
@@ -50,7 +50,8 @@ namespace TodoList.Sevices
         {
             using var context = m_ContextFactory.CreateDbContext();
             return await context.TodoItemGroups
-                                .FirstOrDefaultAsync(c => c.Guid == guid);
+                .Include(g => g.Items)
+                .FirstOrDefaultAsync(c => c.Guid == guid);
         }
 
         /// <summary>
@@ -62,7 +63,8 @@ namespace TodoList.Sevices
         {
             using var context = m_ContextFactory.CreateDbContext();
             return await context.TodoItemGroups
-                                .FirstOrDefaultAsync(g => g.Name == name);
+                .Include(g => g.Items)
+                .FirstOrDefaultAsync(g => g.Name == name);
         }
 
         /// <summary>

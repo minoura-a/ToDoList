@@ -53,7 +53,7 @@
 
     private void CheckTodoCount()
     {
-        if (selectedGroup.Items.Count(todo => todo.IsDone == false) == 0)
+        if (selectedGroup.Items.Count == 0)
         {
             ShowCongratulations();
         }
@@ -98,6 +98,13 @@ else
 @if (showCongratulations)
 {
     <div class="congratulations">
-        <h4 class="congratulations-text">🎊🎉完了おめでとう！🎉🎊</h4>
+        @if (selectedGroup.Name == "完了")
+        {
+            <h4 class="congratulations-text">🌿🥳スッキリしましたね！🥳🌿</h4>
+        }
+        else
+        {
+            <h4 class="congratulations-text">🎊🎉完了おめでとう！🎉🎊</h4>
+        })
     </div>
 }

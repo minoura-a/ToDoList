@@ -2,16 +2,16 @@
 @rendermode InteractiveServer
 
 <div class="task-item">
-    <button class="status-button" @onclick="ToggleIsDone">
-        @if (TodoItem.IsDone)
-        {
-            <span>☑️</span>
-        }
-        else
-        {
+    @if (TodoItem.IsDone)
+    {
+        <span>☑️</span>
+    }
+    else
+    {
+        <button class="status-button" @onclick="ToggleIsDone">
             <span>🔖</span>
-        }
-    </button>
+        </button>
+    }
     <input class="todo-title" type="text" @bind="TodoItem.Title" @bind:event="oninput" @onchange="Edit"></input>
     <button class="remove-button" @onclick="Remove">
         <span>🗑</span>
